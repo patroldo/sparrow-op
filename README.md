@@ -1,6 +1,8 @@
 # Abbreviation
 TTS - text to speech
+
 SST - speech to text
+
 LLM - large language model
 
 # Introduction
@@ -19,6 +21,20 @@ c) And then voice the response from ChatGPT using deepgram
 
 Basically trying to implement my open source walkie-talkie with AI with making the source code as readable as possible in order to allow you to extend it per your own needs. Example - using the same application, but replace steps of interaction of ChatGPT with interaction with local ollama. Or if more intresting - to interact it with self-running python server which using interacts with trello using langchain. You're hosting your server which accepts text and do something with your tasks(create few, some to move, some delete)
 
+# Usage
+
+1) Clone repository
+2) Create(if not created) in root ```local.properties``` file
+3) Add into it apiChatGptKey and apiEleventLabsKey. Example
+4) Run your application on the device
+
+```
+...
+apiChatGptKey="sk-proj-aaaaa"
+apiEleventLabsKey="sk_aaaa"
+...
+```
+
 # Currently planned Task list 
 
 - [x] Write the "bone" application
@@ -31,3 +47,4 @@ Basically trying to implement my open source walkie-talkie with AI with making t
 - [ ] TTS - Add interaction with ElevenLabs
 - [ ] Add camera  + text interaction
 - [ ] Extend README
+- [ ] Integrate with github CI
