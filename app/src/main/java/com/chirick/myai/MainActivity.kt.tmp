@@ -1,0 +1,201 @@
+package com.chirick.myai
+
+import android.Manifest
+import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
+import android.widget.Toast
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import androidx.annotation.RequiresPermission
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import com.chirick.myai.data.audio.FileHelper
+import com.chirick.myai.helpers.PermissionHelper
+import com.chirick.myai.screens.HomeViewModel
+import com.chirick.myai.stt.SpeechToTextService
+import com.chirick.myai.stt.SpeechToTextServiceElevenLabs
+import com.chirick.myai.tts.TextToSpeechService
+import com.chirick.myai.tts.TextToSpeechServiceSherpaImpl
+import com.chirick.myai.ui.theme.MyAITheme
+import com.chirick.myai.data.audio.VoiceRecorder
+import com.chirick.myai.data.audio.WavFileBuilder
+import java.io.File
+
+const val exampleMessage: String = "Sayboard uses for the following permissions"
+
+class MainActivity : ComponentActivity() {
+
+    private lateinit var textToSpeechService: TextToSpeechService
+    private lateinit var speechToTextService: SpeechToTextService
+    private val SAMPLE_RATE = 44100
+    private val voiceRecorder = VoiceRecorder()
+    private val permissionHelper: PermissionHelper = PermissionHelper(this)
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        this.textToSpeechService = TextToSpeechServiceSherpaImpl()
+        this.textToSpeechService.init(this.application)
+        this.speechToTextService = SpeechToTextServiceElevenLabs()
+        this.speechToTextService.init();
+        voiceRecorder
+        enableEdgeToEdge()
+        setContent {
+            MyAITheme {
+                MainContainer(
+                    HomeViewModel(
+                        ::playVoice,
+                        ::playRecorded,
+                        ::clickRecord,
+                        ::stopRecord,
+                        ::speechToText
+                    ),
+                    modifier = Modifier
+                        .fillMaxSize()
+                )
+            }
+        }
+    }
+
+    private fun playVoice() {
+        Thread {
+            this.textToSpeechService.playText(exampleMessage)
+        }.start()
+    }
+
+    private fun playRecorded() {
+        FileHelper.playWavFile(this.filesDir.absolutePath + "audio.wav")
+    }
+
+    private fun clickRecord() {
+        permissionHelper.requestPermission(this, Manifest.permission.RECORD_AUDIO, ::recordAudio, {
+            showToast("Not allowed")
+        })
+    }
+
+    private fun speechToText(
+        successCallback: (String) -> Unit,
+        failedCallback: (Exception) -> Unit
+    ) {
+        this.speechToTextService.translate(
+            File(this.filesDir.absolutePath + "audio.wav"),
+            successCallback, failedCallback
+        )
+    }
+
+    @RequiresPermission(Manifest.permission.RECORD_AUDIO)
+    private fun recordAudio() {
+        voiceRecorder.prepare(SAMPLE_RATE, 320).start()
+    }
+
+    private fun stopRecord() {
+        val wavFile = WavFileBuilder()
+            .setAudioFormat(WavFileBuilder.PCM_AUDIO_FORMAT)
+            .setSampleRate(SAMPLE_RATE)
+            .setBitsPerSample(WavFileBuilder.BITS_PER_SAMPLE_16)
+            .setNumChannels(WavFileBuilder.CHANNELS_MONO)
+            .setSubChunk1Size(WavFileBuilder.SUBCHUNK_1_SIZE_PCM)
+            .build(voiceRecorder.stop())
+
+        val file: File = FileHelper.saveWavFile(wavFile, this.filesDir.absolutePath + "audio.wav")
+
+        showToast("Wav file successfully saved in: ${file.absolutePath}")
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+    }
+}
+
+@Composable
+fun MainContainer(model: HomeViewModel?, modifier: Modifier = Modifier) {
+    val context = LocalContext.current
+    var isRecording by remember { mutableStateOf(false) }
+    var translatedText by remember { mutableStateOf("Temp") }
+    fun updateText(str: String): Unit {
+        translatedText = str
+    }
+
+    fun showError(e: Exception): Unit {
+        Handler(Looper.getMainLooper()).post {
+            Toast.makeText(context, "Something went wrong", Toast.LENGTH_LONG).show();
+        }
+        Log.e("MAIN", "Something went wrong during transcribing", e)
+    }
+    Box(modifier = modifier) {
+        Column(
+            modifier = Modifier
+                .align(Alignment.Center)
+                .wrapContentSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center // <-- important
+        ) {
+            Button(enabled = !isRecording, onClick = {
+                isRecording = true
+                model?.startRecord?.invoke()
+            }) {
+                Text(stringResource(R.string.record))
+            }
+            Button(enabled = isRecording, onClick = {
+                isRecording = false
+                model?.stopRecord?.invoke()
+            }) {
+                Text(stringResource(R.string.stop))
+            }
+            Button(enabled = !isRecording, onClick = {
+                model?.speechToText?.invoke(::updateText, ::showError)
+            }) {
+                Text(stringResource(R.string.translate))
+            }
+            Button(
+                onClick = { model?.playRecorded?.invoke() },
+                modifier = Modifier.padding(top = 36.dp)
+            ) {
+                Text(stringResource(R.string.play_record))
+            }
+            Button(
+                onClick = { model?.playAudio?.invoke() },
+                modifier = Modifier.padding(top = 36.dp)
+            ) {
+                Text(stringResource(R.string.play_voice))
+            }
+        }
+        Text(
+            translatedText,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 16.dp)
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun DiceRollerApp() {
+    MyAITheme {
+        MainContainer(
+            null,
+            modifier = Modifier
+                .fillMaxSize()
+        )
+    }
+}

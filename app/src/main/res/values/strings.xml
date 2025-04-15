@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">My AI</string>
+    <string name="play_voice">Play voice</string>
+    <string name="play_record">Play record</string>
+    <string name="record">Record</string>
+    <string name="stop">Stop</string>
+    <string name="handle">Handle</string>
+
+</resources>
