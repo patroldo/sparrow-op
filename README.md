@@ -42,7 +42,7 @@ apiEleventLabsKey="sk_aaaa"
 - [x] STT - Add interaction with ElevenLabs
 - [ ] STT - Add interaction with Deepgram
 - [x] LLM - Add interactino with chatGPT
-- [x] LLM - Add interactino with ollama
+- [ ] LLM - Add interactino with ollama
 - [ ] TTS - Add interaction with Deepgram
 - [ ] TTS - Add interaction with ElevenLabs
 - [ ] Add camera  + text interaction
