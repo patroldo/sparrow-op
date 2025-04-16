@@ -48,3 +48,7 @@ apiEleventLabsKey="sk_aaaa"
 - [ ] Add camera  + text interaction
 - [ ] Extend README
 - [ ] Integrate with github CI
+
+# Links
+
+Youtube playlist to track the progress(small short demos of current state of application) - https://www.youtube.com/playlist?list=PL7lKhwkfj7OKGUDMnX-fJg4hEy3f6kg5r
