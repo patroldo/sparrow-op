@@ -47,6 +47,9 @@ apiEleventLabsKey="sk_aaaa"
 - [ ] TTS - Add interaction with ElevenLabs
 - [ ] Add camera  + text interaction
 - [ ] Extend README
+- [ ] Add possibility to configure application using qr-code
+- [ ] After clean launch start with qr-code reader to read configuration
+- [ ] Extend README
 - [ ] Integrate with github CI
 
 # Links
