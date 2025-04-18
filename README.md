@@ -51,6 +51,7 @@ apiEleventLabsKey="sk_aaaa"
 - [ ] After clean launch start with qr-code reader to read configuration
 - [ ] Extend README
 - [ ] Integrate with github CI
+- [ ] Implement tiles logic - for details check https://github.com/patroldo/sparrow-op/issues/1
 
 # Links
 
