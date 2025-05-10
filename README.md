@@ -45,7 +45,7 @@ apiEleventLabsKey="sk_aaaa"
 - [ ] LLM - Add interactino with ollama
 - [ ] TTS - Add interaction with Deepgram
 - [ ] TTS - Add interaction with ElevenLabs
-- [ ] Add camera  + text interaction
+- [x] Add camera  + text interaction
 - [ ] Extend README
 - [ ] Add possibility to configure application using qr-code
 - [ ] After clean launch start with qr-code reader to read configuration
