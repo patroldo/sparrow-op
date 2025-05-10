@@ -1,5 +1,6 @@
 package com.chirick.myai.data.llm
 
+import android.util.Log
 import com.chirick.chatgpt.ChatGptApi
 import com.chirick.myai.BuildConfig
 
@@ -13,6 +14,14 @@ class LLMServiceChatGpt : LLMService {
     }
 
     override fun translate(text: String): String {
-        return chatGpt.sendMessage(text).trimIndent().replace("\\n", System.lineSeparator())
+        val answer = chatGpt.sendMessage(text).trimIndent()
+        Log.i("ChatGPTAdapter", answer)
+        return answer.replace("\\n", System.lineSeparator())
+    }
+
+    override fun translate(text: String, filePath: String): String {
+        val answer = chatGpt.sendMessage(text, filePath).trimIndent()
+        Log.i("ChatGPTAdapter", answer)
+        return answer.replace("\\n", System.lineSeparator())
     }
 }

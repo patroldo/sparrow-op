@@ -8,7 +8,7 @@ class SpeechToTextManager @Inject constructor() {
         private set
 
     init {
-        switchService(factory("1"))
+        switchService(factory("2"))
     }
 
     fun switchService(newService: SpeechToTextService) {

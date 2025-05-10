@@ -11,9 +11,9 @@ class SpeechToTextServiceDummy : SpeechToTextService {
     override fun init() {}
 
     override fun translate(filepath: String): String {
-        Thread.sleep(100)
+        Thread.sleep(2000)
         testI++
 //        return "Who are you?(${testI})"
-        return "ChatGPT capabilities"
+        return "What color cat is?"
     }
 }

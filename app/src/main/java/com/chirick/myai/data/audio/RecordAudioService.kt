@@ -1,5 +1,6 @@
 package com.chirick.myai.data.audio
 
+import com.chirick.myai.helpers.FileHelper
 import javax.inject.Inject
 
 class RecordAudioService @Inject constructor() : IRecordAudioService() {
@@ -26,7 +27,7 @@ class RecordAudioService @Inject constructor() : IRecordAudioService() {
             .setSubChunk1Size(WavFileBuilder.SUBCHUNK_1_SIZE_PCM)
             .build(voiceRecorder.stop())
 
-        AudioFileHelper.saveWavFile(wavFile, filepath)
+        FileHelper.saveFile(wavFile, filepath)
     }
 
 }
