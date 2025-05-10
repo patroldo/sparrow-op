@@ -4,10 +4,24 @@
     <selectionStates>
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-04-13T10:09:10.104633286Z">
+        <DropdownSelection timestamp="2025-04-21T14:28:15.778538548Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=/home/yurii/.config/.android/avd/Medium_Phone.avd" />
+              <DeviceId pluginId="PhysicalDevice" identifier="serial=919129A6916002525831" />
+            </handle>
+          </Target>
+        </DropdownSelection>
+        <DialogSelection />
+      </SelectionState>
+      <SelectionState runConfigName="MainContainerPreview">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="testJson()">
+        <option name="selectionMode" value="DROPDOWN" />
+        <DropdownSelection timestamp="2025-04-21T14:27:23.217354670Z">
+          <Target type="DEFAULT_BOOT">
+            <handle>
+              <DeviceId pluginId="PhysicalDevice" identifier="serial=919129A6916002525831" />
             </handle>
           </Target>
         </DropdownSelection>
