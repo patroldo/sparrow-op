@@ -8,7 +8,7 @@ class LLMServiceManager @Inject constructor() {
         private set
 
     init {
-        switchService(factory("2"))
+        switchService(factory("1"))
     }
 
     fun switchService(newService: LLMService) {

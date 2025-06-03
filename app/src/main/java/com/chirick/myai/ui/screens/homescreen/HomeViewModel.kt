@@ -6,6 +6,7 @@ import com.chirick.myai.data.audio.IRecordAudioService
 import com.chirick.myai.data.model.ProcessingState
 import com.chirick.myai.data.voiceassistant.Resource
 import com.chirick.myai.data.voiceassistant.VoiceAssistant
+import com.chirick.myai.ui.model.InteractionStep
 import com.chirick.myai.ui.model.VoiceAssistantInteractionModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -28,6 +29,7 @@ open class HomeViewModel @Inject constructor(
     @Named("recorded_audio") private val filesPath: String
 ) : ViewModel() {
 
+
     val _isSuccess = MutableStateFlow<Boolean>(false)
     val _errorText = MutableStateFlow<String>("")
     protected val _navigationEvent = MutableSharedFlow<Unit>()
@@ -41,20 +43,40 @@ open class HomeViewModel @Inject constructor(
         _errorText
     ) { isRecording, processingState, translatedText, isSuccess, errorText ->
         VoiceAssistantInteractionModel(
-            isRecording = isRecording,
             translatedText = translatedText,
-            processingState = processingState,
             isSuccess = isSuccess,
+            interactionStep = mapRecordingAndProcessingToInteractionStep(
+                processingState,
+                isRecording
+            ),
             errorText = errorText
         )
     }.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5000),
         VoiceAssistantInteractionModel(
-            false, "", "", false,
-            ProcessingState.NOT_PROCESSING
+            false, "", "", InteractionStep.NOT_PROCESSING,
         )
     )
+
+    private fun mapRecordingAndProcessingToInteractionStep(
+        processingState: ProcessingState,
+        isRecording: Boolean
+    ): InteractionStep {
+        return if (processingState != ProcessingState.NOT_PROCESSING) {
+            if (processingState == ProcessingState.SPEECH_TO_TEXT) {
+                InteractionStep.PROCESSING_ONE
+            } else {
+                InteractionStep.PROCESSING_TWO
+            }
+        } else {
+            if (isRecording) {
+                InteractionStep.LISTENING
+            } else {
+                InteractionStep.NOT_PROCESSING
+            }
+        }
+    }
 
     fun startRecording() {
         viewModelScope.launch {

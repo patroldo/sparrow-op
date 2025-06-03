@@ -6,6 +6,12 @@ data class VoiceAssistantInteractionModel(
     val isSuccess: Boolean,
     val errorText: String,
     val translatedText: String,
-    val isRecording: Boolean,
-    val processingState: ProcessingState
+    val interactionStep: InteractionStep,
 )
+
+enum class InteractionStep {
+    NOT_PROCESSING,
+    LISTENING,
+    PROCESSING_ONE,
+    PROCESSING_TWO
+}

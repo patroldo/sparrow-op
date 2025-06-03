@@ -57,9 +57,13 @@ import androidx.compose.ui.unit.Dp
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.chirick.myai.R
 import com.chirick.myai.data.model.ProcessingState
 import com.chirick.myai.ui.components.CameraPreview
+import com.chirick.myai.ui.components.GifImageWithBackground
+import com.chirick.myai.ui.model.InteractionStep
 import com.chirick.myai.ui.model.VoiceAssistantInteractionModel
+import com.chirick.myai.ui.screens.homescreen.selectDrawing
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
@@ -149,9 +153,6 @@ fun MainContainer(
     stopRecordingClick: () -> Unit,
     modifier: Modifier,
 ) {
-    var statusText =
-        if (state.processingState == ProcessingState.SPEECH_TO_TEXT) "1/2 - Processing speech" else "2/2 - Processing text"
-    var isProcessing = state.processingState != ProcessingState.NOT_PROCESSING
 
     Box(
         modifier = modifier
@@ -160,18 +161,20 @@ fun MainContainer(
         contentAlignment = Alignment.Center
     ) {
 
+        val isProcessing =
+            (state.interactionStep == InteractionStep.PROCESSING_ONE) ||
+                    state.interactionStep == InteractionStep.PROCESSING_TWO
+
         if (isProcessing) {
             Column(
                 modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+//                verticalArrangement = Arrangement.Center,
+//                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    text = statusText,
-                    style = MaterialTheme.typography.headlineMedium,
-                    modifier = Modifier.padding(bottom = 32.dp)
+                GifImageWithBackground(
+                    background = R.drawable.background,
+                    image = selectDrawing(state.interactionStep)
                 )
-                CircularProgressIndicator()
             }
         } else if (bitmap != null) {
             DisplayImagePreview(
@@ -197,7 +200,7 @@ fun DisplayImagePreview(
     stopRecordingClick: () -> Unit,
     modifier: Modifier
 ) {
-    val isRecording = state.isRecording
+    val isRecording = state.interactionStep == InteractionStep.LISTENING
     Column(
         modifier = modifier
             .fillMaxSize(),
@@ -400,7 +403,7 @@ fun Dp.toPx(
 fun MainContainerPreview() {
     MainContainer(
         null,
-        VoiceAssistantInteractionModel(false, "", "", false, ProcessingState.NOT_PROCESSING),
+        VoiceAssistantInteractionModel(false, "", "", InteractionStep.NOT_PROCESSING),
         {},
         {},
         {},
